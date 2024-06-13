@@ -12,6 +12,7 @@ import (
 
 type IUserService interface {
 	RegisterUser(w http.ResponseWriter, r *http.Request) (entity.User, error)
+	Login(w http.ResponseWriter, r *http.Request) (entity.User, error)
 }
 
 type UserService struct {
@@ -29,7 +30,7 @@ func (s *UserService) RegisterUser(w http.ResponseWriter, r *http.Request) (enti
 		return entity.User{}, err
 	}
 
-	foundUser, err := s.userRepository.FindUserByID(reqBody)
+	foundUser, err := s.userRepository.FindUserByEmail(reqBody)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return s.userRepository.Register(reqBody)
@@ -39,4 +40,19 @@ func (s *UserService) RegisterUser(w http.ResponseWriter, r *http.Request) (enti
 	}
 
 	return foundUser, errors.New("user already exists in database")
+}
+
+func (s *UserService) Login(w http.ResponseWriter, r *http.Request) (entity.User, error) {
+	reqBody := entity.User{}
+
+	if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+		return entity.User{}, err
+	}
+
+	foundUser, err := s.userRepository.FindUserByEmail(reqBody)
+	if err != nil {
+		return reqBody, err
+	}
+
+	return foundUser, nil
 }

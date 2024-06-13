@@ -14,4 +14,5 @@ func initializeRoutes(r *mux.Router) {
 	userControler := controller.NewUserController(userService)
 
 	r.HandleFunc("/register", userControler.RegisterUser).Methods("POST")
+	r.HandleFunc("/login", userControler.Login).Methods("POST")
 }
