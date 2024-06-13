@@ -21,19 +21,13 @@ func NewUserRepository() IUserRepository {
 
 func (r *UserRepository) Register(user entity.User) (entity.User, error) {
 
-	newUser := entity.User{
-		Name:     user.Name,
-		Email:    user.Email,
-		Password: user.Password,
-	}
-
-	err := r.db.Create(&newUser).Error
+	err := r.db.Create(&user).Error
 
 	if err != nil {
 		return entity.User{}, err
 	}
 
-	return newUser, nil
+	return user, nil
 
 }
 
